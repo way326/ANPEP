@@ -20,7 +20,22 @@ Design and Development of an Automated Negotiation Platform for Enterprise Procu
 - 请确保已正确配置项目中的参数和配置文件
 
 ## 项目结构
-- main.py：主程序入口
+├── main.py
+├── negotiation # 谈判模块
+│   ├── __init__.py
+│   ├── session.py
+│   ├── negotiators.py  # 包含 SmartAspirationNegotiator 类
+│   ├── utils.py
+├── my_threading # 多线程模块
+│   ├── __init__.py
+│   ├── thread_tasks.py
+└── requirements.txt
+
 - README.md：项目说明文档
-- single.py：单线程谈判实现
-- AIvsAIver.py：AI对AI谈判实现
+- AIvsAIver.py：前期agent对agent单独谈判实现，不带UI
+- singleyneg.py：单线程单独谈判实现，带UI
+- multiplyneg.py: 多线程谈判单独实现，带UI，最终版本finalver
+- software.puml: 项目架构图
+
+## 备注
+本项目由于工期问题和小组成员合作经验不足，代码较为混乱，仍然需要进一步优化和重构。
