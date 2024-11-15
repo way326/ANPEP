@@ -1,0 +1,38 @@
+@startuml
+package "Main Module" {
+    class Main {
+        +main() : void
+    }
+}
+
+package "Threading Module" {
+    class ThreadTasks {
+        +thread1(shared_string, results, index, thr_mutex) : void
+    }
+}
+
+package "Negotiation Module" {
+    class NegotiationSession {
+        +NegotiationSession(items, num_sellers)
+        +create_issues_with_ranges(seller_index) : List
+        +create_buyer_utility(session, seller_index) : UtilityFunction
+        +create_seller_utility(session, seller_index, favor) : UtilityFunction
+        +set_seller_favor(seller_index, favor) : void
+        +set_price_and_quantity_ranges(seller_index, price_ranges, quantity_ranges) : void
+        +run_negotiation(shared_string, results, index, thr_mutex) : void
+    }
+
+    class SmartAspirationNegotiator {
+        +set_helper(helper_negotiator) : void
+        +set_parameter(shared_string, results, index, thr_mutex) : void
+        +respond(state, source) : ResponseType
+        +user_propose() : Tuple
+        +propose(state) : Tuple
+    }
+}
+
+Main --> ThreadTasks : uses
+ThreadTasks --> NegotiationSession : uses
+NegotiationSession --> SmartAspirationNegotiator : instantiates
+
+@enduml
