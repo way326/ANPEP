@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation System</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Negotiation System</h1>
+
+    <!-- Start Negotiations Button -->
+    <div>
+        <button onclick="startNegotiation()">Start Negotiations</button>
+    </div>
+
+    <br><br>
+
+    <!-- Current Round Info -->
+    <div>
+        <h3>Current Round Info:</h3>
+        <button onclick="getRoundInfo()">Refresh Round Info</button>
+        <pre id="round-info"></pre> <!-- Display round number and suggested offer -->
+    </div>
+
+    <br>
+
+    <!-- Provide Input Section -->
+    <div>
+        <h3>Provide Input:</h3>
+        <label for="thread-index">Thread Index:</label>
+        <input type="number" id="thread-index" min="0" max="2" placeholder="Enter Thread Index">
+        
+        <p id="suggested-offer">Suggested Offer: N/A</p> <!-- Placeholder for suggested offer -->
+
+        <label for="user-input">Your Input:</label>
+        <input type="text" id="user-input" placeholder="Enter 'y', 'n', or a custom offer">
+
+        <button onclick="sendInput()">Submit</button>
+    </div>
+
+    <br>
+
+    <!-- Results Section -->
+    <div>
+        <h3>Negotiation Results:</h3>
+        <button onclick="getResults()">Get Results</button>
+        <pre id="results"></pre> <!-- Display negotiation results -->
+    </div>
+
+    <script>
+        // Function to start negotiations
+        function startNegotiation() {
+            $.post('/start_negotiation', {}, function (response) {
+                alert(response.status);
+            });
+        }
+
+        // Function to send user input to the server
+        function sendInput() {
+            const index = $("#thread-index").val();
+            const input = $("#user-input").val();
+
+            if (index === "" || input === "") {
+                alert("Please provide both the thread index and your input.");
+                return;
+            }
+
+            $.ajax({
+                url: '/send_input',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ index: parseInt(index), input: input }),
+                success: function (response) {
+                    alert(response.status);
+                },
+                error: function () {
+                    alert("Failed to send input. Please try again.");
+                }
+            });
+        }
+
+        // Function to get current round info (including suggested offer)
+        function getRoundInfo() {
+            $.get('/get_round_info', function (response) {
+                const roundInfo = response;
+                let infoText = "";
+
+                roundInfo.forEach((info, index) => {
+                    infoText += `Thread ${index}:\n`;
+                    infoText += `  Current Round: ${info.round}\n`;
+                    infoText += `  Suggested Offer: ${info.suggestion ? JSON.stringify(info.suggestion) : "N/A"}\n\n`;
+                });
+
+                $("#round-info").text(infoText);
+
+                // Update suggested offer for the selected thread
+                const threadIndex = $("#thread-index").val();
+                if (threadIndex !== "" && roundInfo[threadIndex]) {
+                    $("#suggested-offer").text(`Suggested Offer: ${JSON.stringify(roundInfo[threadIndex].suggestion)}`);
+                } else {
+                    $("#suggested-offer").text("Suggested Offer: N/A");
+                }
+            });
+        }
+
+        // Function to get negotiation results
+        function getResults() {
+            $.get('/get_results', function (response) {
+                $("#results").text(JSON.stringify(response, null, 2));
+            });
+        }
+    </script>
+</body>
+</html>
